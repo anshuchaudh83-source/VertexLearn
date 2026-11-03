@@ -1,0 +1,53 @@
+@model List<Question>
+@{
+    var quiz = (Quiz)ViewBag.Quiz;
+    ViewData["Title"] = "Questions: " + quiz.Title;
+    var letters = new[] { "A", "B", "C", "D" };
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head with-action">
+            <div>
+                <nav class="breadcrumb" aria-label="Breadcrumb"><a asp-action="Quizzes">Quizzes</a></nav>
+                <h1>@quiz.Title</h1>
+                <p>@quiz.CourseTitle, pass mark @quiz.PassPercent%. @Model.Count question(s).</p>
+            </div>
+            <a class="btn btn-primary" asp-action="CreateQuestion" asp-route-quizId="@quiz.QuizId">Add question</a>
+        </header>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <h2>No questions yet</h2>
+                <p>Students can't see this quiz until it has at least one question.</p>
+                <a class="btn btn-primary" asp-action="CreateQuestion" asp-route-quizId="@quiz.QuizId">Add the first question</a>
+            </div>
+        }
+
+        <ol class="question-admin-list">
+            @foreach (var q in Model)
+            {
+                <li class="panel">
+                    <p class="review-q" style="margin-bottom: 12px;">@q.QuestionText</p>
+                    <ul class="option-list">
+                        @foreach (var l in letters)
+                        {
+                            <li class="@(q.CorrectOption == l ? "is-correct" : "")">
+                                <span class="option-letter">@l</span> @q.OptionText(l)
+                                @if (q.CorrectOption == l) { <span class="visually-hidden">(correct answer)</span> }
+                            </li>
+                        }
+                    </ul>
+                    <div class="actions">
+                        <a class="text-link" asp-action="EditQuestion" asp-route-id="@q.QuestionId">Edit</a>
+                        <form asp-action="DeleteQuestion" asp-route-id="@q.QuestionId" method="post" data-confirm="Delete this question?">
+                            <button type="submit" class="link-danger">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            }
+        </ol>
+    </div>
+</div>

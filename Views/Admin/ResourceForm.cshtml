@@ -1,0 +1,90 @@
+@model Resource
+@{
+    var isNew = Model.ResourceId == 0;
+    ViewData["Title"] = isNew ? "Add resource" : "Edit resource";
+    var courseOptions = ViewBag.CourseOptions as List<SelectListItem> ?? new();
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>@ViewData["Title"]</h1>
+        </header>
+
+        <div class="form-card">
+            <form asp-action="SaveResource" method="post" enctype="multipart/form-data" novalidate>
+                <input type="hidden" asp-for="ResourceId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field">
+                    <label asp-for="CourseId"></label>
+                    <select asp-for="CourseId" asp-items="courseOptions">
+                        <option value="0">Choose a course</option>
+                    </select>
+                    <span asp-validation-for="CourseId" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" />
+                    <span asp-validation-for="Title" class="field-error"></span>
+                </div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="Type"></label>
+                        <select asp-for="Type" id="resourceType">
+                            @foreach (var t in Resource.Types)
+                            {
+                                <option value="@t">@t</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Type" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="SortOrder"></label>
+                        <input asp-for="SortOrder" type="number" min="0" max="999" />
+                        <span asp-validation-for="SortOrder" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Url"></label>
+                    <input asp-for="Url" placeholder="https://www.youtube.com/watch?v=… or https://developer.mozilla.org/…" />
+                    <small class="field-help">YouTube links are shown as an embedded player. Use a full web address for external links.</small>
+                    <span asp-validation-for="Url" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="UploadFile"></label>
+                    <input asp-for="UploadFile" type="file" accept=".pdf,.txt,.md,.docx,.pptx,.png,.jpg,.jpeg,.gif,.webp,.svg,.mp3,.wav,.ogg,.mp4,.webm" />
+                    <small class="field-help">
+                        Upload a PDF, notes (.pdf, .txt, .md, .docx, .pptx), image, audio or video file, up to 20 MB.
+                        An uploaded file replaces the URL above.
+                        @if (!isNew && (Model.Url ?? "").StartsWith("/files/"))
+                        {
+                            <span class="current-file">Current file: <a href="@Model.Url" target="_blank" rel="noopener">@System.IO.Path.GetFileName(Model.Url)</a></span>
+                        }
+                    </small>
+                    <span asp-validation-for="UploadFile" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" rows="3" data-counter="500"></textarea>
+                    <span asp-validation-for="Description" class="field-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(isNew ? "Add resource" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Resources">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

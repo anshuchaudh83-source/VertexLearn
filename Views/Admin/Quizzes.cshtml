@@ -1,0 +1,64 @@
+@model List<Quiz>
+@{
+    ViewData["Title"] = "Manage quizzes";
+    var courses = ViewBag.Courses as List<Course> ?? new();
+    var selected = ViewData["CourseId"] as int?;
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head with-action">
+            <div>
+                <h1>Quizzes</h1>
+                <p>Self-assessment quizzes. Open a quiz to add or edit its questions.</p>
+            </div>
+            <a class="btn btn-primary" asp-action="CreateQuiz" asp-route-courseId="@selected">Add quiz</a>
+        </header>
+
+        <form method="get" asp-action="Quizzes" class="toolbar">
+            <label for="courseId" class="visually-hidden">Course</label>
+            <select id="courseId" name="courseId" onchange="this.form.submit()">
+                <option value="">All courses</option>
+                @foreach (var c in courses)
+                {
+                    <option value="@c.CourseId" selected="@(c.CourseId == selected)">@c.Title</option>
+                }
+            </select>
+            <noscript><button type="submit" class="btn btn-small">Filter</button></noscript>
+        </form>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th scope="col">Quiz</th><th scope="col">Course</th><th scope="col">Questions</th><th scope="col">Pass mark</th><th scope="col">Attempts</th><th scope="col">Actions</th></tr></thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="6" class="empty-cell">No quizzes yet.</td></tr>
+                    }
+                    @foreach (var q in Model)
+                    {
+                        <tr>
+                            <td><strong>@q.Title</strong></td>
+                            <td>@q.CourseTitle</td>
+                            <td>
+                                @q.QuestionCount
+                                @if (q.QuestionCount == 0) { <span class="warn-tag">Hidden from students</span> }
+                            </td>
+                            <td>@q.PassPercent%</td>
+                            <td>@q.AttemptCount</td>
+                            <td class="actions">
+                                <a class="text-link" asp-action="Questions" asp-route-quizId="@q.QuizId">Questions</a>
+                                <a class="text-link" asp-action="EditQuiz" asp-route-id="@q.QuizId">Edit</a>
+                                <form asp-action="DeleteQuiz" asp-route-id="@q.QuizId" method="post"
+                                      data-confirm="Delete @q.Title? Its questions and all student attempts will also be deleted.">
+                                    <button type="submit" class="link-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

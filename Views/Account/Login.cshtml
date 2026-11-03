@@ -1,0 +1,49 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<section class="auth-section">
+    <div class="container auth-inner">
+        <div class="auth-card">
+            <h1>Log in to VertexLearn</h1>
+            <p class="auth-sub">Pick up your courses, quizzes and discussions where you left off.</p>
+
+            <form asp-controller="Account" asp-action="Login" method="post" novalidate>
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" placeholder="you@example.com" autocomplete="username" autofocus />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Password"></label>
+                    <div class="password-wrap">
+                        <input asp-for="Password" autocomplete="current-password" />
+                        <button type="button" class="toggle-password" data-target="Password" aria-label="Show password">Show</button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="field-row">
+                    <label class="checkbox-label">
+                        <input asp-for="RememberMe" />
+                        <span>Keep me logged in</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Log in</button>
+            </form>
+
+            <p class="auth-switch">New to VertexLearn? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
+
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

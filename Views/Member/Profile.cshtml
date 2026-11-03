@@ -1,0 +1,82 @@
+@model ProfilePageViewModel
+@{
+    ViewData["Title"] = "Your profile";
+    var openPassword = ViewData["OpenPasswordPanel"] as bool? ?? false;
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Your profile</h1>
+        <p class="page-sub">Member since <time datetime="@Model.Profile.MemberSince.ToString("yyyy-MM-dd")">@Model.Profile.MemberSince.ToString("MMMM yyyy")</time>. Signed in as @(User.IsAdmin() ? "an administrator" : "a student").</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container profile-grid">
+        <div class="form-card">
+            <h2 class="h3">Personal details</h2>
+            <form asp-action="Profile" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+                <div class="field">
+                    <label asp-for="Profile.FullName"></label>
+                    <input asp-for="Profile.FullName" autocomplete="name" />
+                    <span asp-validation-for="Profile.FullName" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Profile.Email"></label>
+                    <input asp-for="Profile.Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Profile.Email" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Profile.Bio"></label>
+                    <textarea asp-for="Profile.Bio" rows="4" data-counter="500" placeholder="What are you studying? What do you want to learn?"></textarea>
+                    <span asp-validation-for="Profile.Bio" class="field-error"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Save profile</button>
+            </form>
+        </div>
+
+        <div>
+            <details class="form-card collapsible" @(openPassword ? "open" : "")>
+                <summary><h2 class="h3">Change password</h2></summary>
+                <form asp-action="ChangePassword" method="post" novalidate>
+                    <div class="field">
+                        <label asp-for="Password.CurrentPassword"></label>
+                        <input asp-for="Password.CurrentPassword" autocomplete="current-password" />
+                        <span asp-validation-for="Password.CurrentPassword" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Password.NewPassword"></label>
+                        <input asp-for="Password.NewPassword" autocomplete="new-password" />
+                        <span asp-validation-for="Password.NewPassword" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Password.ConfirmNewPassword"></label>
+                        <input asp-for="Password.ConfirmNewPassword" autocomplete="new-password" />
+                        <span asp-validation-for="Password.ConfirmNewPassword" class="field-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change password</button>
+                </form>
+            </details>
+
+            @if (User.IsStudent())
+            {
+                <details class="form-card collapsible danger-zone">
+                    <summary><h2 class="h3">Delete account</h2></summary>
+                    <p>This permanently removes your account, enrolments, quiz results and discussion posts. It can't be undone.</p>
+                    <form asp-action="DeleteAccount" method="post" data-confirm="Delete your account permanently?">
+                        <div class="field">
+                            <label for="confirmEmail">Type your email to confirm</label>
+                            <input id="confirmEmail" name="confirmEmail" type="email" required autocomplete="off" />
+                        </div>
+                        <button type="submit" class="btn btn-danger">Delete my account</button>
+                    </form>
+                </details>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

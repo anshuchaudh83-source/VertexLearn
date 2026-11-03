@@ -1,0 +1,48 @@
+@model List<QuizAttempt>
+@{
+    ViewData["Title"] = "Quiz results";
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Your quiz results</h1>
+        <p class="page-sub">Every attempt is saved. Open one to review your answers.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <h2>No results yet</h2>
+                <p>Take a quiz from any course you're enrolled in.</p>
+                <a class="btn btn-primary" asp-action="Dashboard">Go to my courses</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="data-table">
+                    <caption class="visually-hidden">All quiz attempts</caption>
+                    <thead>
+                        <tr><th scope="col">Quiz</th><th scope="col">Course</th><th scope="col">Score</th><th scope="col">Result</th><th scope="col">Date</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model)
+                        {
+                            <tr>
+                                <td>@a.QuizTitle</td>
+                                <td>@a.CourseTitle</td>
+                                <td>@a.Score / @a.TotalQuestions (@a.Percent%)</td>
+                                <td><span class="score-pill @(a.Passed ? "pass" : "fail")">@(a.Passed ? "Passed" : "Not passed")</span></td>
+                                <td><time datetime="@a.AttemptedAt.ToString("s")">@a.AttemptedAt.ToString("d MMM yyyy, HH:mm")</time></td>
+                                <td><a class="text-link" asp-controller="Quiz" asp-action="Result" asp-route-id="@a.AttemptId">Review</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

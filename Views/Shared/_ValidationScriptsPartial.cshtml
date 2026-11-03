@@ -1,0 +1,13 @@
+@* Client-side validation driven by the same Data Annotations used on the server *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    // Client-side half of [MustBeTrue] (Infrastructure/MustBeTrueAttribute.cs):
+    // the checkbox passes only when it is ticked. Registered here, before the
+    // unobtrusive library scans the page on document-ready.
+    jQuery.validator.addMethod("mustbetrue", function (value, element) {
+        return element.checked;
+    });
+    jQuery.validator.unobtrusive.adapters.addBool("mustbetrue");
+</script>

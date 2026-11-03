@@ -1,0 +1,24 @@
+@{
+    var code = ViewData["Code"] as int? ?? 0;
+    ViewData["Title"] = code == 404 ? "Page not found" : "Error " + code;
+}
+<section class="page-header">
+    <div class="container narrow">
+        <p class="status-code">@code</p>
+        @if (code == 404)
+        {
+            <h1>We couldn't find that page.</h1>
+            <p class="page-sub">The link may be out of date, or the item may have been deleted.</p>
+        }
+        else if (code == 403)
+        {
+            <h1>You don't have access to this page.</h1>
+            <p class="page-sub">Log in with an account that has permission, or go back.</p>
+        }
+        else
+        {
+            <h1>The request couldn't be completed.</h1>
+        }
+        <a class="btn btn-primary" asp-controller="Courses" asp-action="Index">Browse courses</a>
+    </div>
+</section>

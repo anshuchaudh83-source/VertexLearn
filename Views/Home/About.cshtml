@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "About";
+}
+
+@section Styles {
+    <!-- Internal CSS: styles that only the About page uses -->
+    <style>
+        .about-roles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 28px 0 8px;
+        }
+        .about-roles section {
+            border-top: 3px solid var(--color-amber);
+            padding-top: 14px;
+        }
+        .faq details {
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+        }
+        .faq summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-navy-dark);
+            list-style-position: outside;
+        }
+        .faq details[open] summary { color: var(--color-amber-dark); }
+        .faq details p { margin: 10px 0 0; }
+        @@media (max-width: 760px) {
+            .about-roles { grid-template-columns: 1fr; }
+        }
+    </style>
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>A learning system built around one problem: too many disconnected tools.</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container narrow">
+        <h2>Why VertexLearn exists</h2>
+        <p>
+            Most students studying online end up spread across several platforms:
+            one for lecture notes, another for quizzes, a third for discussion.
+            VertexLearn combines learning resources, self-assessment and peer
+            discussion into a single system, so tracking your own progress
+            doesn't mean checking five different places.
+        </p>
+
+        <blockquote class="mission-block">
+            <p>
+                To provide a reliable, accessible and user-friendly digital learning
+                environment that connects students with educational resources, assessment
+                activities and collaborative learning opportunities through an integrated
+                web application.
+            </p>
+            <footer>Our mission</footer>
+        </blockquote>
+
+        <h2>Who it's for</h2>
+        <div class="about-roles">
+            <section>
+                <h3>Visitors</h3>
+                <p>Browse the full course catalogue and read each course outline without an account.</p>
+            </section>
+            <section>
+                <h3>Students</h3>
+                <p>Enrol, study multimedia materials, take quizzes, join discussions and track progress.</p>
+            </section>
+            <section>
+                <h3>Administrators</h3>
+                <p>Manage users, categories, courses, resources, quizzes, discussions and messages.</p>
+            </section>
+        </div>
+
+        <h2>Our objectives</h2>
+        <ul class="tick-list">
+            <li>Give students a single, organised place to find course materials in several formats.</li>
+            <li>Provide instant feedback through automatically marked self-assessment quizzes.</li>
+            <li>Support asynchronous learning with course-specific discussion boards.</li>
+            <li>Let administrators keep the content current without touching the code.</li>
+        </ul>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container narrow faq">
+        <h2>Frequently asked questions</h2>
+        <details>
+            <summary>Is VertexLearn free?</summary>
+            <p>Yes. Registration and all courses are free for students.</p>
+        </details>
+        <details>
+            <summary>Can I retake a quiz?</summary>
+            <p>Yes, as many times as you like. Every attempt is saved and your dashboard shows your best score.</p>
+        </details>
+        <details>
+            <summary>What happens if I leave a course?</summary>
+            <p>You lose access to its materials and discussion, but your past quiz results stay in your history. You can enrol again at any time.</p>
+        </details>
+        <details>
+            <summary>How do I delete my account?</summary>
+            <p>Go to your profile and use the "Delete account" section. This removes your enrolments, quiz results and posts.</p>
+        </details>
+    </div>
+</section>

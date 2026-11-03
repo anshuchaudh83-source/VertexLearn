@@ -1,0 +1,40 @@
+@model DiscussionPost
+@{
+    ViewData["Title"] = "Edit post";
+}
+
+<section class="page-header">
+    <div class="container narrow">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a asp-action="Thread" asp-route-id="@Model.PostId">Back to thread</a>
+        </nav>
+        <h1>Edit your post</h1>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container narrow">
+        <div class="form-card">
+            <form asp-action="Edit" asp-route-id="@Model.PostId" method="post" novalidate>
+                <div class="field">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" />
+                    <span asp-validation-for="Title" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Body">Details</label>
+                    <textarea asp-for="Body" rows="8" data-counter="4000"></textarea>
+                    <span asp-validation-for="Body" class="field-error"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-ghost" asp-action="Thread" asp-route-id="@Model.PostId">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

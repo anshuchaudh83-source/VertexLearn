@@ -1,0 +1,42 @@
+@model List<ContactMessage>
+@{
+    ViewData["Title"] = "Contact messages";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>Contact messages</h1>
+            <p>Sent through the public Contact page. Unread messages are listed first.</p>
+        </header>
+
+        @if (Model.Count == 0)
+        {
+            <p class="empty-state">No messages.</p>
+        }
+        @foreach (var m in Model)
+        {
+            <article class="panel message @(m.IsRead ? "" : "unread")">
+                <header class="message-head">
+                    <h2 class="h3">@m.Subject</h2>
+                    @if (!m.IsRead) { <span class="warn-tag">New</span> }
+                </header>
+                <p class="post-meta">
+                    From @m.Name &lt;<a href="mailto:@m.Email?subject=Re: @Uri.EscapeDataString(m.Subject)">@m.Email</a>&gt;,
+                    <time datetime="@m.CreatedAt.ToString("s")">@m.CreatedAt.ToString("d MMM yyyy, HH:mm")</time>
+                </p>
+                <div class="post-body">@m.Message</div>
+                <div class="actions">
+                    <form asp-action="ToggleMessageRead" asp-route-id="@m.MessageId" method="post">
+                        <input type="hidden" name="isRead" value="@((!m.IsRead).ToString().ToLower())" />
+                        <button type="submit" class="text-link as-button">@(m.IsRead ? "Mark as unread" : "Mark as read")</button>
+                    </form>
+                    <form asp-action="DeleteMessage" asp-route-id="@m.MessageId" method="post" data-confirm="Delete this message?">
+                        <button type="submit" class="link-danger">Delete</button>
+                    </form>
+                </div>
+            </article>
+        }
+    </div>
+</div>

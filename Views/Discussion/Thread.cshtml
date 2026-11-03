@@ -1,0 +1,83 @@
+@model ThreadViewModel
+@{
+    var p = Model.Post;
+    ViewData["Title"] = p.Title;
+    var me = User.GetUserId();
+    var isAdmin = User.IsAdmin();
+}
+
+<section class="page-header">
+    <div class="container narrow">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a asp-controller="Member" asp-action="Learn" asp-route-id="@p.CourseId">@p.CourseTitle</a> <span aria-hidden="true">/</span>
+            <a asp-action="Index" asp-route-courseId="@p.CourseId">Discussion board</a>
+        </nav>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container narrow">
+        <article class="post">
+            <h1 class="post-title">@p.Title</h1>
+            <p class="post-meta">
+                <span class="author @(p.AuthorRole == Roles.Admin ? "is-staff" : "")">@p.AuthorName</span>
+                posted <time datetime="@p.CreatedAt.ToString("s")">@p.CreatedAt.ToString("d MMM yyyy, HH:mm")</time>
+                @if (p.UpdatedAt != null)
+                {
+                    <span>(edited)</span>
+                }
+            </p>
+            <div class="post-body">@p.Body</div>
+
+            @if (p.UserId == me || isAdmin)
+            {
+                <div class="post-actions">
+                    @if (p.UserId == me)
+                    {
+                        <a class="text-link" asp-action="Edit" asp-route-id="@p.PostId">Edit</a>
+                    }
+                    <form asp-action="Delete" asp-route-id="@p.PostId" method="post" data-confirm="Delete this thread and all its replies?">
+                        <button type="submit" class="link-danger">Delete thread</button>
+                    </form>
+                </div>
+            }
+        </article>
+
+        <h2 id="replies" class="h3">@Model.Replies.Count @(Model.Replies.Count == 1 ? "reply" : "replies")</h2>
+        <ol class="reply-list">
+            @foreach (var r in Model.Replies)
+            {
+                <li class="reply">
+                    <p class="post-meta">
+                        <span class="author @(r.AuthorRole == Roles.Admin ? "is-staff" : "")">@r.AuthorName</span>
+                        <time datetime="@r.CreatedAt.ToString("s")">@r.CreatedAt.ToString("d MMM yyyy, HH:mm")</time>
+                    </p>
+                    <div class="post-body">@r.Body</div>
+                    @if (r.UserId == me || isAdmin)
+                    {
+                        <form asp-action="DeleteReply" asp-route-id="@r.ReplyId" method="post" data-confirm="Delete this reply?">
+                            <button type="submit" class="link-danger">Delete</button>
+                        </form>
+                    }
+                </li>
+            }
+        </ol>
+
+        <div class="form-card">
+            <h2 class="h3">Add a reply</h2>
+            <form asp-action="Reply" method="post" novalidate>
+                <input type="hidden" asp-for="NewReply.PostId" />
+                <div class="field">
+                    <label asp-for="NewReply.Body">Your reply</label>
+                    <textarea asp-for="NewReply.Body" rows="4" data-counter="2000"></textarea>
+                    <span asp-validation-for="NewReply.Body" class="field-error"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Post reply</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

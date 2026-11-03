@@ -1,0 +1,119 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    string Active(string c, string? a = null) =>
+        controller == c && (a == null || action == a) ? "active" : "";
+    var isLoggedIn = User.Identity?.IsAuthenticated == true;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="VertexLearn — a web-based learning system with courses, multimedia resources, self-assessment quizzes and discussion boards." />
+    <title>@ViewData["Title"] | VertexLearn</title>
+    <link rel="icon" href="~/images/logo-mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- External stylesheet shared by every page -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="VertexLearn home">
+                <img src="~/images/logo-mark.svg" alt="" width="34" height="34" />
+                <span class="brand-name">VertexLearn</span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="site-nav" id="siteNav" aria-label="Main">
+                <a class="@Active("Home", "Index")" asp-controller="Home" asp-action="Index">Home</a>
+                <a class="@Active("Courses")" asp-controller="Courses" asp-action="Index">Courses</a>
+                <a class="@Active("Home", "About")" asp-controller="Home" asp-action="About">About</a>
+                <a class="@Active("Home", "Contact")" asp-controller="Home" asp-action="Contact">Contact</a>
+
+                @if (!isLoggedIn)
+                {
+                    <a asp-controller="Account" asp-action="Login" class="nav-cta-ghost">Log in</a>
+                    <a asp-controller="Account" asp-action="Register" class="nav-cta">Get started</a>
+                }
+                else
+                {
+                    @if (User.IsAdmin())
+                    {
+                        <a class="@Active("Admin") nav-admin" asp-controller="Admin" asp-action="Index">Admin panel</a>
+                    }
+                    else
+                    {
+                        <a class="@Active("Member", "Dashboard")" asp-controller="Member" asp-action="Dashboard">My learning</a>
+                    }
+                    <a class="nav-user @Active("Member", "Profile")" asp-controller="Member" asp-action="Profile" title="Your profile">
+                        <span class="avatar" aria-hidden="true">@(User.FirstName().Substring(0, 1).ToUpper())</span>
+                        @User.FirstName()
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
+                        <button type="submit" class="nav-cta-ghost">Log out</button>
+                    </form>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <partial name="_Alerts" />
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="~/images/logo-mark.svg" alt="" width="30" height="30" />
+                    <span class="brand-name">VertexLearn</span>
+                </div>
+                <p>Courses, multimedia resources, self-assessment and discussion in one place, for students who learn on their own schedule.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Learn</h4>
+                    <a asp-controller="Courses" asp-action="Index">Browse courses</a>
+                    <a asp-controller="Home" asp-action="About">About VertexLearn</a>
+                    <a asp-controller="Home" asp-action="Contact">Contact us</a>
+                </div>
+                <div>
+                    <h4>Account</h4>
+                    @if (isLoggedIn)
+                    {
+                        <a asp-controller="Member" asp-action="Profile">Profile</a>
+                        @if (User.IsStudent())
+                        {
+                            <a asp-controller="Member" asp-action="Dashboard">My learning</a>
+                            <a asp-controller="Member" asp-action="Results">Quiz results</a>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login">Log in</a>
+                        <a asp-controller="Account" asp-action="Register">Register</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <small>&copy; @DateTime.Now.Year VertexLearn. Built for CT050-3-2-WAPP, Asia Pacific University.</small>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,39 @@
+@model List<Category>
+@{
+    ViewData["Title"] = "Manage categories";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head with-action">
+            <div>
+                <h1>Categories</h1>
+                <p>Used to group courses in the catalogue. A category can only be deleted when it has no courses.</p>
+            </div>
+            <a class="btn btn-primary" asp-action="CreateCategory">Add category</a>
+        </header>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th scope="col">Name</th><th scope="col">Description</th><th scope="col">Courses</th><th scope="col">Actions</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td><strong>@c.Name</strong></td>
+                            <td>@c.Description</td>
+                            <td><a class="text-link" asp-action="Courses" asp-route-categoryId="@c.CategoryId">@c.CourseCount</a></td>
+                            <td class="actions">
+                                <a class="text-link" asp-action="EditCategory" asp-route-id="@c.CategoryId">Edit</a>
+                                <form asp-action="DeleteCategory" asp-route-id="@c.CategoryId" method="post" data-confirm="Delete the category @c.Name?">
+                                    <button type="submit" class="link-danger" disabled="@(c.CourseCount > 0)" title="@(c.CourseCount > 0 ? "Has courses" : "")">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

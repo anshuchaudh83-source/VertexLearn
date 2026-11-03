@@ -1,0 +1,42 @@
+@model List<QuizAttempt>
+@{
+    ViewData["Title"] = "Quiz attempts";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>Quiz attempts</h1>
+            <p>The 200 most recent submissions across all courses.</p>
+        </header>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th scope="col">Student</th><th scope="col">Quiz</th><th scope="col">Course</th><th scope="col">Score</th><th scope="col">Date</th><th scope="col">Actions</th></tr></thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="6" class="empty-cell">No attempts yet.</td></tr>
+                    }
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>@a.StudentName</td>
+                            <td>@a.QuizTitle</td>
+                            <td>@a.CourseTitle</td>
+                            <td><span class="score-pill @(a.Passed ? "pass" : "fail")">@a.Score/@a.TotalQuestions (@a.Percent%)</span></td>
+                            <td>@a.AttemptedAt.ToString("d MMM yyyy, HH:mm")</td>
+                            <td class="actions">
+                                <a class="text-link" asp-controller="Quiz" asp-action="Result" asp-route-id="@a.AttemptId">Review</a>
+                                <form asp-action="DeleteAttempt" asp-route-id="@a.AttemptId" method="post" data-confirm="Delete this attempt?">
+                                    <button type="submit" class="link-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

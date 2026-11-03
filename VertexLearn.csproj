@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>VertexLearn</RootNamespace>
+    <UserSecretsId>e56d7873-3862-487f-9434-d35bc075189e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ADO.NET provider for Microsoft SQL Server (the only NuGet package used) -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The database script is copied to the build output so the app can create the DB on first run -->
+    <None Update="Database\VertexLearnDb.sql" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

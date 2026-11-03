@@ -1,0 +1,143 @@
+@model LearnViewModel
+@{
+    var c = Model.Course;
+    ViewData["Title"] = c.Title;
+}
+
+<section class="page-header">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            @if (User.IsStudent())
+            {
+                <a asp-action="Dashboard">My learning</a> <span aria-hidden="true">/</span>
+            }
+            <a asp-controller="Courses" asp-action="Details" asp-route-id="@c.CourseId">Course overview</a>
+        </nav>
+        <h1>@c.Title</h1>
+        <p class="page-sub">Taught by @c.Instructor. Work through the materials in order, then check your understanding with the quiz.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container learn-grid">
+        <div>
+            <h2>Learning materials</h2>
+            @if (Model.Resources.Count == 0)
+            {
+                <p class="empty-state">No materials have been added to this course yet.</p>
+            }
+            @foreach (var r in Model.Resources)
+            {
+                <article class="resource" id="resource-@r.ResourceId">
+                    <header>
+                        <span class="res-type res-@r.Type.ToLower()">@MediaHelper.TypeIcon(r.Type) @r.Type</span>
+                        <h3>@r.Title</h3>
+                    </header>
+                    @if (!string.IsNullOrEmpty(r.Description))
+                    {
+                        <p>@r.Description</p>
+                    }
+
+                    @* Multimedia rendering depends on the resource type *@
+                    @switch (r.Type)
+                    {
+                        case "Video":
+                            var embed = MediaHelper.ToYouTubeEmbed(r.Url);
+                            if (embed != null)
+                            {
+                                <div class="video-frame">
+                                    <iframe src="@embed" title="@r.Title" loading="lazy"
+                                            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            }
+                            else if (MediaHelper.IsVideoFile(r.Url))
+                            {
+                                <video controls preload="metadata" class="media-full">
+                                    <source src="@r.Url" />
+                                    Your browser can't play this video. <a href="@r.Url">Download it instead</a>.
+                                </video>
+                            }
+                            else
+                            {
+                                <a class="btn btn-small" href="@r.Url" target="_blank" rel="noopener">Watch video</a>
+                            }
+                            break;
+                        case "Image":
+                            <figure class="media-figure">
+                                <img src="@r.Url" alt="@r.Title" loading="lazy" />
+                                <figcaption>@r.Title</figcaption>
+                            </figure>
+                            break;
+                        case "Audio":
+                            <audio controls preload="none" class="media-full">
+                                <source src="@r.Url" />
+                                Your browser can't play this audio. <a href="@r.Url">Download it</a>.
+                            </audio>
+                            break;
+                        case "PDF":
+                            <details class="pdf-preview">
+                                <summary>Preview the PDF here</summary>
+                                <object data="@r.Url" type="application/pdf" width="100%" height="520">
+                                    <p>Your browser can't display PDFs inline.</p>
+                                </object>
+                            </details>
+                            <a class="btn btn-small" href="@r.Url" target="_blank" rel="noopener">Open PDF</a>
+                            break;
+                        case "Notes":
+                            <a class="btn btn-small" href="@r.Url" target="_blank" rel="noopener">Open notes</a>
+                            break;
+                        default: @* Link *@
+                            <a class="btn btn-small" href="@r.Url" target="_blank" rel="noopener">Open link</a>
+                            break;
+                    }
+                </article>
+            }
+        </div>
+
+        <aside>
+            <div class="side-card">
+                <h2 class="h3">Quizzes</h2>
+                @if (Model.Quizzes.Count == 0)
+                {
+                    <p>No quizzes for this course yet.</p>
+                }
+                @foreach (var q in Model.Quizzes)
+                {
+                    <div class="quiz-summary">
+                        <strong>@q.Title</strong>
+                        <small>@q.QuestionCount questions, pass mark @q.PassPercent%</small>
+                        @if (q.BestPercent != null)
+                        {
+                            <p class="best">Best score: <span class="score-pill @(q.BestPercent >= q.PassPercent ? "pass" : "fail")">@q.BestPercent%</span> in @q.MyAttempts @(q.MyAttempts == 1 ? "attempt" : "attempts")</p>
+                        }
+                        @if (q.QuestionCount > 0)
+                        {
+                            <a class="btn btn-small" asp-controller="Quiz" asp-action="Take" asp-route-id="@q.QuizId">@(q.MyAttempts > 0 ? "Retake quiz" : "Start quiz")</a>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="side-card">
+                <h2 class="h3">Discussion</h2>
+                @if (Model.RecentPosts.Count == 0)
+                {
+                    <p>No one has posted yet. Start the conversation.</p>
+                }
+                else
+                {
+                    <ul class="plain-list">
+                        @foreach (var p in Model.RecentPosts)
+                        {
+                            <li>
+                                <a asp-controller="Discussion" asp-action="Thread" asp-route-id="@p.PostId">@p.Title</a><br />
+                                <small>@p.AuthorName, @p.ReplyCount @(p.ReplyCount == 1 ? "reply" : "replies")</small>
+                            </li>
+                        }
+                    </ul>
+                }
+                <a class="btn btn-small" asp-controller="Discussion" asp-action="Index" asp-route-courseId="@c.CourseId">Open discussion board</a>
+            </div>
+        </aside>
+    </div>
+</section>

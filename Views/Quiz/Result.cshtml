@@ -1,0 +1,70 @@
+@model QuizResultViewModel
+@{
+    var a = Model.Attempt;
+    ViewData["Title"] = "Result: " + a.QuizTitle;
+}
+
+<section class="page-header">
+    <div class="container narrow">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a asp-controller="Member" asp-action="Learn" asp-route-id="@a.CourseId">@a.CourseTitle</a>
+        </nav>
+        <h1>@a.QuizTitle</h1>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container narrow">
+        <div class="result-card @(a.Passed ? "is-pass" : "is-fail")">
+            <div class="result-score">
+                @* Inline style: the colour depends on this attempt's result *@
+                <span class="big" style="color: @(a.Passed ? "#1F7A3D" : "#B3261E");">@a.Percent%</span>
+                <span>@a.Score of @a.TotalQuestions correct</span>
+            </div>
+            <div>
+                <h2 class="h3">@(a.Passed ? "Passed. Well done." : "Not passed yet.")</h2>
+                <p>
+                    Pass mark is @a.PassPercent%.
+                    @(a.Passed ? "Review any questions you missed below." : "Go through the explanations below, revisit the materials, then try again.")
+                </p>
+                <dl class="result-breakdown">
+                    <div><dt>Score</dt><dd>@a.Score / @a.TotalQuestions</dd></div>
+                    <div><dt>Percentage</dt><dd>@a.Percent%</dd></div>
+                    <div><dt>Correct answers</dt><dd>@a.Score</dd></div>
+                    <div><dt>Wrong answers</dt><dd>@(a.TotalQuestions - a.Score)</dd></div>
+                </dl>
+                <meter min="0" max="100" low="@a.PassPercent" high="85" optimum="100" value="@a.Percent" aria-label="Score">@a.Percent%</meter>
+                <p class="muted-note">
+                    @(User.GetUserId() == a.UserId ? "Taken" : $"Taken by {a.StudentName}") on
+                    <time datetime="@a.AttemptedAt.ToString("s")">@a.AttemptedAt.ToString("d MMM yyyy, HH:mm")</time>
+                </p>
+            </div>
+        </div>
+
+        <h2>Question review</h2>
+        <ol class="review-list">
+            @foreach (var ans in Model.Answers)
+            {
+                <li class="review @(ans.IsCorrect ? "correct" : "wrong")">
+                    <p class="review-q">@ans.QuestionText</p>
+                    <p>
+                        Your answer: <strong>@ans.SelectedOption. @ans.OptionText(ans.SelectedOption)</strong>
+                        <span class="verdict">@(ans.IsCorrect ? "Correct" : "Incorrect")</span>
+                    </p>
+                    @if (!ans.IsCorrect)
+                    {
+                        <p>Correct answer: <strong>@ans.CorrectOption. @ans.OptionText(ans.CorrectOption)</strong></p>
+                    }
+                </li>
+            }
+        </ol>
+
+        <div class="quiz-actions">
+            @if (User.GetUserId() == a.UserId)
+            {
+                <a class="btn btn-primary" asp-action="Take" asp-route-id="@a.QuizId">Retake quiz</a>
+            }
+            <a class="btn btn-ghost" asp-controller="Member" asp-action="Learn" asp-route-id="@a.CourseId">Back to course</a>
+        </div>
+    </div>
+</section>

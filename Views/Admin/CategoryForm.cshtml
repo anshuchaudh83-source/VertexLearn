@@ -1,0 +1,37 @@
+@model Category
+@{
+    var isNew = Model.CategoryId == 0;
+    ViewData["Title"] = isNew ? "Add category" : "Edit category";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>@ViewData["Title"]</h1>
+        </header>
+        <div class="form-card">
+            <form asp-action="SaveCategory" method="post" novalidate>
+                <input type="hidden" asp-for="CategoryId" />
+                <div class="field">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" />
+                    <span asp-validation-for="Name" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" rows="3" data-counter="250"></textarea>
+                    <span asp-validation-for="Description" class="field-error"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(isNew ? "Create category" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Categories">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

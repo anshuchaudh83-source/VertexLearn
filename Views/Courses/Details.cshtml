@@ -1,0 +1,104 @@
+@model CourseDetailsViewModel
+@{
+    var c = Model.Course;
+    ViewData["Title"] = c.Title;
+    var canOpen = Model.IsEnrolled || Model.IsAdmin;
+}
+
+<section class="course-hero">
+    <div class="container course-hero-inner">
+        <div>
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a asp-action="Index">Courses</a> <span aria-hidden="true">/</span>
+                <a asp-action="Index" asp-route-categoryId="@c.CategoryId">@c.CategoryName</a>
+            </nav>
+            <h1>@c.Title</h1>
+            <p class="page-sub">@c.Description</p>
+            <ul class="fact-list">
+                <li><span>Instructor</span>@c.Instructor</li>
+                <li><span>Level</span>@c.Level</li>
+                <li><span>Lessons</span>@c.LessonCount</li>
+                <li><span>Students</span>@c.EnrollmentCount</li>
+            </ul>
+
+            <div class="hero-actions">
+                @if (canOpen)
+                {
+                    <a class="btn btn-primary" asp-controller="Member" asp-action="Learn" asp-route-id="@c.CourseId">Open course</a>
+                }
+                else if (User.IsStudent())
+                {
+                    <form asp-controller="Member" asp-action="Enroll" asp-route-id="@c.CourseId" method="post">
+                        <button type="submit" class="btn btn-primary">Enrol in this course</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Register to enrol</a>
+                    <a class="btn btn-ghost" asp-controller="Account" asp-action="Login"
+                       asp-route-returnUrl="@Url.Action("Details", "Courses", new { id = c.CourseId })">I have an account</a>
+                }
+            </div>
+        </div>
+        <figure class="course-hero-image">
+            <img src="@c.CoverImage" alt="Cover illustration for @c.Title" width="640" height="320" />
+        </figure>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container two-col">
+        <div>
+            <h2>What's inside</h2>
+            @if (Model.Resources.Count == 0)
+            {
+                <p>Materials for this course are being prepared.</p>
+            }
+            else
+            {
+                <ol class="syllabus">
+                    @foreach (var r in Model.Resources)
+                    {
+                        <li>
+                            <span class="res-type res-@r.Type.ToLower()">@MediaHelper.TypeIcon(r.Type) @r.Type</span>
+                            <div>
+                                <strong>@r.Title</strong>
+                                @if (!string.IsNullOrEmpty(r.Description))
+                                {
+                                    <p>@r.Description</p>
+                                }
+                            </div>
+                            @if (!canOpen)
+                            {
+                                <span class="lock" title="Enrol to unlock">Locked</span>
+                            }
+                        </li>
+                    }
+                </ol>
+            }
+        </div>
+
+        <aside class="side-card">
+            <h3>Self-assessment</h3>
+            @if (Model.Quizzes.Count == 0)
+            {
+                <p>No quizzes yet.</p>
+            }
+            else
+            {
+                <ul class="plain-list">
+                    @foreach (var q in Model.Quizzes)
+                    {
+                        <li><strong>@q.Title</strong><br /><small>@q.QuestionCount questions, pass mark @q.PassPercent%</small></li>
+                    }
+                </ul>
+            }
+            <h3>Discussion</h3>
+            <p>@Model.PostCount @(Model.PostCount == 1 ? "thread" : "threads") on this course's board.</p>
+            @if (!canOpen)
+            {
+                <p class="muted-note">Enrol to see materials, take quizzes and join the discussion.</p>
+            }
+        </aside>
+    </div>
+</section>

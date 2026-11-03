@@ -1,0 +1,62 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create an account";
+}
+
+<section class="auth-section">
+    <div class="container auth-inner">
+        <div class="auth-card">
+            <h1>Create your VertexLearn account</h1>
+            <p class="auth-sub">Free for students. Takes less than a minute.</p>
+
+            <form asp-controller="Account" asp-action="Register" method="post" novalidate id="registerForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field">
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName" placeholder="e.g. Jasmi Dhami" autocomplete="name" />
+                    <span asp-validation-for="FullName" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" placeholder="you@example.com" autocomplete="email" />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Password"></label>
+                    <div class="password-wrap">
+                        <input asp-for="Password" autocomplete="new-password" aria-describedby="pwHelp" />
+                        <button type="button" class="toggle-password" data-target="Password" aria-label="Show password">Show</button>
+                    </div>
+                    <meter id="pwStrength" min="0" max="4" low="2" high="3" optimum="4" value="0" aria-label="Password strength"></meter>
+                    <small id="pwHelp" class="field-help">At least 8 characters with an uppercase letter, a lowercase letter and a number. <span id="pwStrengthText"></span></small>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="ConfirmPassword"></label>
+                    <input asp-for="ConfirmPassword" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label class="checkbox-label">
+                        <input asp-for="AcceptTerms" />
+                        <span>I agree to use VertexLearn respectfully and not share my account.</span>
+                    </label>
+                    <span asp-validation-for="AcceptTerms" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Create account</button>
+            </form>
+
+            <p class="auth-switch">Already have an account? <a asp-controller="Account" asp-action="Login">Log in</a></p>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

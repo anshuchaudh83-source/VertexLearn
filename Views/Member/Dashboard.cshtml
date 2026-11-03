@@ -1,0 +1,90 @@
+@model StudentDashboardViewModel
+@{
+    ViewData["Title"] = "My learning";
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Welcome back, @User.FirstName()</h1>
+        <p class="page-sub">Here's where your courses and quiz results stand.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <dl class="stat-grid">
+            <div class="stat"><dt>Enrolled courses</dt><dd>@Model.Courses.Count</dd></div>
+            <div class="stat"><dt>Completed quizzes</dt><dd>@Model.TotalAttempts</dd></div>
+            <div class="stat"><dt>Learning progress</dt><dd>@(Model.Courses.Count == 0 ? "–" : (int)Math.Round(Model.Courses.Average(c => c.ProgressPercent)) + "%")</dd></div>
+            @* Inline style: the accent bar length reflects the student's own average *@
+            <div class="stat" style="background: linear-gradient(90deg, #FBF3E2 @(Model.AveragePercent)%, #FFFFFF @(Model.AveragePercent)%);"><dt>Average score</dt><dd>@(Model.TotalAttempts == 0 ? "–" : Model.AveragePercent + "%")</dd></div>
+            <div class="stat"><dt>Discussion posts</dt><dd>@Model.PostCount</dd></div>
+        </dl>
+
+        <div class="dash-grid">
+            <div>
+                <div class="section-heading">
+                    <h2>My courses</h2>
+                    <a class="text-link" asp-controller="Courses" asp-action="Index">Find more courses</a>
+                </div>
+
+                @if (Model.Courses.Count == 0)
+                {
+                    <div class="empty-state">
+                        <h3>You haven't enrolled in a course yet</h3>
+                        <p>Browse the catalogue and enrol in one to see it here.</p>
+                        <a class="btn btn-primary" asp-controller="Courses" asp-action="Index">Browse courses</a>
+                    </div>
+                }
+                else
+                {
+                    <ul class="enrolled-list">
+                        @foreach (var ec in Model.Courses)
+                        {
+                            <li class="enrolled-item">
+                                <img src="@ec.Course.CoverImage" alt="" width="120" height="60" loading="lazy" />
+                                <div class="enrolled-info">
+                                    <h3><a asp-action="Learn" asp-route-id="@ec.Course.CourseId">@ec.Course.Title</a></h3>
+                                    <small>Enrolled <time datetime="@ec.EnrolledAt.ToString("yyyy-MM-dd")">@ec.EnrolledAt.ToString("d MMM yyyy")</time></small>
+                                    <div class="progress-row">
+                                        <progress max="100" value="@ec.ProgressPercent" aria-label="Course progress"></progress>
+                                        <span>@ec.QuizzesPassed of @ec.TotalQuizzes quizzes passed</span>
+                                    </div>
+                                </div>
+                                <div class="enrolled-actions">
+                                    <a class="btn btn-small" asp-action="Learn" asp-route-id="@ec.Course.CourseId">Continue</a>
+                                    <form asp-action="Unenroll" asp-route-id="@ec.Course.CourseId" method="post"
+                                          data-confirm="Leave @ec.Course.Title? You can enrol again later.">
+                                        <button type="submit" class="link-danger">Leave course</button>
+                                    </form>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <aside class="side-card">
+                <h2 class="h3">Recent quiz results</h2>
+                @if (Model.RecentAttempts.Count == 0)
+                {
+                    <p>No attempts yet. Open a course and take its quiz to see your score here.</p>
+                }
+                else
+                {
+                    <ul class="attempt-list">
+                        @foreach (var a in Model.RecentAttempts)
+                        {
+                            <li>
+                                <a asp-controller="Quiz" asp-action="Result" asp-route-id="@a.AttemptId">@a.QuizTitle</a>
+                                <span class="score-pill @(a.Passed ? "pass" : "fail")">@a.Percent%</span>
+                                <small>@a.CourseTitle, <time datetime="@a.AttemptedAt.ToString("s")">@a.AttemptedAt.ToString("d MMM")</time></small>
+                            </li>
+                        }
+                    </ul>
+                    <a class="text-link" asp-action="Results">All results</a>
+                }
+            </aside>
+        </div>
+    </div>
+</section>

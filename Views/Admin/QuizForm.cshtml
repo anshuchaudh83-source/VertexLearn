@@ -1,0 +1,54 @@
+@model Quiz
+@{
+    var isNew = Model.QuizId == 0;
+    ViewData["Title"] = isNew ? "Add quiz" : "Edit quiz";
+    var courseOptions = ViewBag.CourseOptions as List<SelectListItem> ?? new();
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>@ViewData["Title"]</h1>
+        </header>
+
+        <div class="form-card">
+            <form asp-action="SaveQuiz" method="post" novalidate>
+                <input type="hidden" asp-for="QuizId" />
+                <div class="field">
+                    <label asp-for="CourseId"></label>
+                    <select asp-for="CourseId" asp-items="courseOptions">
+                        <option value="0">Choose a course</option>
+                    </select>
+                    <span asp-validation-for="CourseId" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" />
+                    <span asp-validation-for="Title" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" rows="3" data-counter="500"></textarea>
+                    <span asp-validation-for="Description" class="field-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="PassPercent"></label>
+                    <div class="range-row">
+                        <input asp-for="PassPercent" type="range" min="1" max="100" step="1" id="passRange" />
+                        <output for="passRange" id="passOut">@Model.PassPercent%</output>
+                    </div>
+                    <span asp-validation-for="PassPercent" class="field-error"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(isNew ? "Create quiz and add questions" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Quizzes">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

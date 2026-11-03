@@ -1,0 +1,74 @@
+@model Question
+@{
+    var quiz = (Quiz)ViewBag.Quiz;
+    var isNew = Model.QuestionId == 0;
+    ViewData["Title"] = isNew ? "Add question" : "Edit question";
+    var letters = new[] { "A", "B", "C", "D" };
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <nav class="breadcrumb" aria-label="Breadcrumb"><a asp-action="Questions" asp-route-quizId="@quiz.QuizId">@quiz.Title</a></nav>
+            <h1>@ViewData["Title"]</h1>
+        </header>
+
+        <div class="form-card">
+            <form asp-action="SaveQuestion" method="post" novalidate>
+                <input type="hidden" asp-for="QuestionId" />
+                <input type="hidden" asp-for="QuizId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field">
+                    <label asp-for="QuestionText"></label>
+                    <textarea asp-for="QuestionText" rows="3" data-counter="500"></textarea>
+                    <span asp-validation-for="QuestionText" class="field-error"></span>
+                </div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="OptionA"></label>
+                        <input asp-for="OptionA" />
+                        <span asp-validation-for="OptionA" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="OptionB"></label>
+                        <input asp-for="OptionB" />
+                        <span asp-validation-for="OptionB" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="OptionC"></label>
+                        <input asp-for="OptionC" />
+                        <span asp-validation-for="OptionC" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="OptionD"></label>
+                        <input asp-for="OptionD" />
+                        <span asp-validation-for="OptionD" class="field-error"></span>
+                    </div>
+                </div>
+
+                <fieldset class="field">
+                    <legend>Correct option</legend>
+                    <div class="radio-row">
+                        @foreach (var l in letters)
+                        {
+                            <label class="checkbox-label"><input type="radio" asp-for="CorrectOption" value="@l" /> Option @l</label>
+                        }
+                    </div>
+                    <span asp-validation-for="CorrectOption" class="field-error"></span>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(isNew ? "Add question" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Questions" asp-route-quizId="@quiz.QuizId">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

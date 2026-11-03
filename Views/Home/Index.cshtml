@@ -1,0 +1,109 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Learn at your own pace";
+}
+
+<section class="hero">
+    <div class="container hero-inner">
+        <div class="hero-copy">
+            <h1>One place for your courses, your quizzes, and the people learning alongside you.</h1>
+            <p class="hero-sub">
+                VertexLearn brings course materials, self-assessment quizzes and discussion
+                into a single system, so you stop juggling five different tabs to study.
+            </p>
+            <div class="hero-actions">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a class="btn btn-primary" asp-controller="Courses" asp-action="Index">Find a course</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Create free account</a>
+                    <a class="btn btn-ghost" asp-controller="Courses" asp-action="Index">Browse courses</a>
+                }
+            </div>
+
+            <!-- Live figures from the database -->
+            <dl class="hero-stats">
+                <div><dt>Courses</dt><dd>@Model.CourseCount</dd></div>
+                <div><dt>Students</dt><dd>@Model.StudentCount</dd></div>
+                <div><dt>Quizzes</dt><dd>@Model.QuizCount</dd></div>
+            </dl>
+        </div>
+
+        <figure class="hero-visual">
+            <img src="~/images/hero-learning.svg" alt="Illustration of a student's dashboard with course progress, a quiz score and a discussion thread" width="520" height="420" />
+        </figure>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Popular courses</h2>
+            <a class="text-link" asp-controller="Courses" asp-action="Index">See all courses</a>
+        </div>
+
+        <div class="course-grid">
+            @foreach (var course in Model.FeaturedCourses)
+            {
+                <partial name="_CourseCard" model="course" />
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-heading centered">
+            <h2>How learning works here</h2>
+            <p>Four steps, from signing up to seeing your progress.</p>
+        </div>
+
+        <ol class="steps">
+            <li>
+                <h3>Pick a course</h3>
+                <p>Browse by category or search, then enrol with one click.</p>
+            </li>
+            <li>
+                <h3>Study the materials</h3>
+                <p>Watch videos, read handouts and diagrams in the order the instructor set.</p>
+            </li>
+            <li>
+                <h3>Test yourself</h3>
+                <p>Take a quiz and get your score and a question-by-question review immediately.</p>
+            </li>
+            <li>
+                <h3>Discuss and improve</h3>
+                <p>Ask questions on the course board and track your progress on your dashboard.</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Browse by subject</h2>
+        </div>
+        <ul class="category-list">
+            @foreach (var cat in Model.Categories)
+            {
+                <li>
+                    <a asp-controller="Courses" asp-action="Index" asp-route-categoryId="@cat.CategoryId">
+                        <strong>@cat.Name</strong>
+                        <span>@cat.CourseCount @(cat.CourseCount == 1 ? "course" : "courses")</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</section>
+
+<section class="cta-band">
+    <div class="container cta-inner">
+        <h2>Ready to start learning?</h2>
+        <p>Registration takes less than a minute and needs no payment details.</p>
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Create your account</a>
+    </div>
+</section>

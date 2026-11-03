@@ -1,0 +1,65 @@
+@model UserFormViewModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Add user" : "Edit user";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>@(Model.IsNew ? "Add user" : $"Edit {Model.FullName}")</h1>
+        </header>
+
+        <div class="form-card">
+            <form asp-action="SaveUser" method="post" novalidate>
+                <input type="hidden" asp-for="UserId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="FullName"></label>
+                        <input asp-for="FullName" />
+                        <span asp-validation-for="FullName" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" type="email" />
+                        <span asp-validation-for="Email" class="field-error"></span>
+                    </div>
+                </div>
+
+                <fieldset class="field">
+                    <legend>Role</legend>
+                    <div class="radio-row">
+                        @foreach (var r in Roles.All)
+                        {
+                            <label class="checkbox-label"><input type="radio" asp-for="Role" value="@r" /> @r</label>
+                        }
+                    </div>
+                    <span asp-validation-for="Role" class="field-error"></span>
+                </fieldset>
+
+                <div class="field">
+                    <label asp-for="Password">@(Model.IsNew ? "Password" : "New password (leave blank to keep the current one)")</label>
+                    <input asp-for="Password" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Bio"></label>
+                    <textarea asp-for="Bio" rows="3" data-counter="500"></textarea>
+                    <span asp-validation-for="Bio" class="field-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(Model.IsNew ? "Create user" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Users">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

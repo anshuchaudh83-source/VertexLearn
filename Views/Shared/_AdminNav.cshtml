@@ -1,0 +1,19 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    string Is(params string[] actions) => actions.Contains(action) ? "active" : "";
+}
+<aside class="admin-nav" aria-label="Admin sections">
+    <p class="admin-nav-title">Administration</p>
+    <nav>
+        <a class="@Is("Index")" asp-controller="Admin" asp-action="Index">Dashboard</a>
+        <a class="@Is("Users", "CreateUser", "EditUser", "SaveUser")" asp-controller="Admin" asp-action="Users">Users</a>
+        <a class="@Is("Categories", "CreateCategory", "EditCategory", "SaveCategory")" asp-controller="Admin" asp-action="Categories">Categories</a>
+        <a class="@Is("Courses", "CreateCourse", "EditCourse", "SaveCourse")" asp-controller="Admin" asp-action="Courses">Courses</a>
+        <a class="@Is("Resources", "CreateResource", "EditResource", "SaveResource")" asp-controller="Admin" asp-action="Resources">Resources</a>
+        <a class="@Is("Quizzes", "CreateQuiz", "EditQuiz", "SaveQuiz", "Questions", "CreateQuestion", "EditQuestion", "SaveQuestion")" asp-controller="Admin" asp-action="Quizzes">Quizzes</a>
+        <a class="@Is("Attempts")" asp-controller="Admin" asp-action="Attempts">Quiz attempts</a>
+        <a class="@Is("Discussions")" asp-controller="Admin" asp-action="Discussions">Discussions</a>
+        <a class="@Is("Messages")" asp-controller="Admin" asp-action="Messages">Messages</a>
+        <a asp-controller="Member" asp-action="Profile">My profile</a>
+    </nav>
+</aside>

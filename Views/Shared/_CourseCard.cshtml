@@ -1,0 +1,29 @@
+@model Course
+@{
+    var enrolled = ViewData["Enrolled"] as bool? ?? false;
+}
+<article class="course-card">
+    <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId" class="course-cover" tabindex="-1" aria-hidden="true">
+        <img src="@Model.CoverImage" alt="" loading="lazy" width="640" height="320" />
+    </a>
+    <div class="course-body">
+        <div class="course-tags">
+            <span class="course-tag">@Model.CategoryName</span>
+            <span class="level level-@Model.Level.ToLower()">@Model.Level</span>
+        </div>
+        <h3><a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId">@Model.Title</a></h3>
+        <p>@(Model.Description.Length > 130 ? Model.Description.Substring(0, 127) + "…" : Model.Description)</p>
+        <div class="course-meta">
+            <span>@Model.Instructor</span>
+            <span>@Model.LessonCount lessons</span>
+        </div>
+        @if (enrolled)
+        {
+            <a class="btn btn-small btn-enrolled" asp-controller="Member" asp-action="Learn" asp-route-id="@Model.CourseId">Continue learning</a>
+        }
+        else
+        {
+            <a class="btn btn-small" asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId">View course</a>
+        }
+    </div>
+</article>

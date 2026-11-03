@@ -1,0 +1,71 @@
+@model DiscussionIndexViewModel
+@{
+    ViewData["Title"] = "Discussion: " + Model.Course.Title;
+    var hasErrors = !ViewData.ModelState.IsValid;
+}
+
+<section class="page-header">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a asp-controller="Member" asp-action="Learn" asp-route-id="@Model.Course.CourseId">@Model.Course.Title</a>
+        </nav>
+        <h1>Discussion board</h1>
+        <p class="page-sub">Ask questions, share what you've figured out, and help other students on this course.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container forum-grid">
+        <div>
+            <h2 class="h3">@Model.Posts.Count @(Model.Posts.Count == 1 ? "thread" : "threads")</h2>
+            @if (Model.Posts.Count == 0)
+            {
+                <p class="empty-state">No threads yet. Be the first to ask something.</p>
+            }
+            <ul class="thread-list">
+                @foreach (var p in Model.Posts)
+                {
+                    <li>
+                        <article class="thread-item">
+                            <h3><a asp-action="Thread" asp-route-id="@p.PostId">@p.Title</a></h3>
+                            <p>@(p.Body.Length > 160 ? p.Body.Substring(0, 157) + "…" : p.Body)</p>
+                            <footer>
+                                <span class="author @(p.AuthorRole == Roles.Admin ? "is-staff" : "")">@p.AuthorName</span>
+                                <time datetime="@p.CreatedAt.ToString("s")">@p.CreatedAt.ToString("d MMM yyyy")</time>
+                                <span class="reply-count">@p.ReplyCount @(p.ReplyCount == 1 ? "reply" : "replies")</span>
+                            </footer>
+                        </article>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <aside>
+            <div class="form-card" id="new-post">
+                <h2 class="h3">Start a thread</h2>
+                <form asp-action="Create" method="post" novalidate>
+                    <input type="hidden" asp-for="NewPost.CourseId" />
+                    <div class="field">
+                        <label asp-for="NewPost.Title">Title</label>
+                        <input asp-for="NewPost.Title" placeholder="Summarise your question" />
+                        <span asp-validation-for="NewPost.Title" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="NewPost.Body">Details</label>
+                        <textarea asp-for="NewPost.Body" rows="6" data-counter="4000" placeholder="What did you try? What happened?"></textarea>
+                        <span asp-validation-for="NewPost.Body" class="field-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Post thread</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @if (hasErrors)
+    {
+        <script>document.getElementById("new-post").scrollIntoView();</script>
+    }
+}

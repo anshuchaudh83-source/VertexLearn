@@ -1,0 +1,90 @@
+@model Course
+@{
+    var isNew = Model.CourseId == 0;
+    ViewData["Title"] = isNew ? "Add course" : "Edit course";
+    var categoryOptions = ViewBag.CategoryOptions as List<SelectListItem> ?? new();
+    var covers = new[] { "web-fundamentals", "database-systems", "javascript-essentials", "uiux-design", "server-side", "discussion-learning", "default" };
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>@(isNew ? "Add course" : $"Edit {Model.Title}")</h1>
+        </header>
+
+        <div class="form-card">
+            <form asp-action="SaveCourse" method="post" novalidate>
+                <input type="hidden" asp-for="CourseId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" />
+                    <span asp-validation-for="Title" class="field-error"></span>
+                </div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="CategoryId"></label>
+                        <select asp-for="CategoryId" asp-items="categoryOptions">
+                            <option value="0">Choose a category</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Level"></label>
+                        <select asp-for="Level">
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                        </select>
+                        <span asp-validation-for="Level" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="Instructor"></label>
+                        <input asp-for="Instructor" />
+                        <span asp-validation-for="Instructor" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="LessonCount"></label>
+                        <input asp-for="LessonCount" type="number" min="1" max="200" />
+                        <span asp-validation-for="LessonCount" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" rows="5" data-counter="1000"></textarea>
+                    <span asp-validation-for="Description" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="ImageUrl"></label>
+                    <input asp-for="ImageUrl" list="coverImages" placeholder="/images/courses/default.svg" data-preview="coverPreview" />
+                    <datalist id="coverImages">
+                        @foreach (var cov in covers)
+                        {
+                            <option value="/images/courses/@(cov).svg"></option>
+                        }
+                    </datalist>
+                    <small class="field-help">Pick one of the built-in covers or paste an image URL. Leave blank for the default cover.</small>
+                    <span asp-validation-for="ImageUrl" class="field-error"></span>
+                    <img id="coverPreview" class="cover-preview" src="@Model.CoverImage" alt="Cover preview" width="320" height="160" />
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">@(isNew ? "Create course" : "Save changes")</button>
+                    <a class="btn btn-ghost" asp-action="Courses">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" width="640" height="380" role="img" aria-labelledby="t"><title id="t">The CSS box model: margin, border, padding and content</title>
+<rect width="640" height="380" fill="#fff"/>
+<rect x="40" y="30" width="560" height="320" fill="#FBF3E2" stroke="#D9A441" stroke-dasharray="6 4"/><text x="56" y="56" font-family="Arial" font-size="15" font-weight="700" fill="#9A6A1C">margin</text>
+<rect x="100" y="75" width="440" height="230" fill="#1F2A55"/><text x="116" y="99" font-family="Arial" font-size="15" font-weight="700" fill="#fff">border</text>
+<rect x="116" y="110" width="408" height="180" fill="#E8F4EF"/><text x="132" y="134" font-family="Arial" font-size="15" font-weight="700" fill="#1E6B4E">padding</text>
+<rect x="190" y="150" width="260" height="100" fill="#fff" stroke="#1E6B4E"/><text x="320" y="197" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#1B1D29">content</text><text x="320" y="222" text-anchor="middle" font-family="Arial" font-size="13" fill="#5B5E72">width × height</text>
+</svg>

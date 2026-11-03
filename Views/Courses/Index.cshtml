@@ -1,0 +1,64 @@
+@model CourseCatalogViewModel
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Browse courses</h1>
+        <p class="page-sub">Open any course to see what it covers. Enrolling needs a free account.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <form method="get" asp-action="Index" class="search-bar" role="search">
+            @if (Model.SelectedCategoryId != null)
+            {
+                <input type="hidden" name="categoryId" value="@Model.SelectedCategoryId" />
+            }
+            <label for="search" class="visually-hidden">Search courses</label>
+            <input type="search" id="search" name="search" value="@Model.Search" placeholder="Search by title, topic or instructor" maxlength="100" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <nav class="filter-row" aria-label="Filter courses by category">
+            <a class="filter-chip @(Model.SelectedCategoryId == null ? "active" : "")"
+               asp-action="Index" asp-route-search="@Model.Search">All</a>
+            @foreach (var cat in Model.Categories)
+            {
+                <a class="filter-chip @(Model.SelectedCategoryId == cat.CategoryId ? "active" : "")"
+                   asp-action="Index" asp-route-categoryId="@cat.CategoryId" asp-route-search="@Model.Search">
+                    @cat.Name <span class="chip-count">@cat.CourseCount</span>
+                </a>
+            }
+        </nav>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Search))
+        {
+            <p class="result-note">
+                @Model.Courses.Count result(s) for "<strong>@Model.Search</strong>".
+                <a class="text-link" asp-action="Index" asp-route-categoryId="@Model.SelectedCategoryId">Clear search</a>
+            </p>
+        }
+
+        @if (Model.Courses.Count == 0)
+        {
+            <div class="empty-state">
+                <h2>No courses match</h2>
+                <p>Try a different search term or pick another category.</p>
+                <a class="btn btn-ghost" asp-action="Index">Show all courses</a>
+            </div>
+        }
+        else
+        {
+            <div class="course-grid">
+                @foreach (var course in Model.Courses)
+                {
+                    <partial name="_CourseCard" model="course"
+                             view-data='new ViewDataDictionary(ViewData) { ["Enrolled"] = Model.EnrolledCourseIds.Contains(course.CourseId) }' />
+                }
+            </div>
+        }
+    </div>
+</section>

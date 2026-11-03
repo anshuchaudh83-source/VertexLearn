@@ -1,0 +1,76 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin dashboard";
+}
+
+<div class="container admin-layout">
+    <partial name="_AdminNav" />
+    <div class="admin-main">
+        <header class="admin-head">
+            <h1>Dashboard</h1>
+            <p>Overview of the content and activity in the VertexLearn database.</p>
+        </header>
+
+        <dl class="stat-grid">
+            <div class="stat"><dt><a asp-action="Users" asp-route-role="Student">Students</a></dt><dd>@Model.StudentCount</dd></div>
+            <div class="stat"><dt><a asp-action="Courses">Courses</a></dt><dd>@Model.CourseCount</dd></div>
+            <div class="stat"><dt><a asp-action="Resources">Resources</a></dt><dd>@Model.ResourceCount</dd></div>
+            <div class="stat"><dt><a asp-action="Quizzes">Quizzes</a></dt><dd>@Model.QuizCount</dd></div>
+            <div class="stat"><dt><a asp-action="Discussions">Discussion threads</a></dt><dd>@Model.PostCount</dd></div>
+            <div class="stat @(Model.UnreadMessages > 0 ? "stat-alert" : "")"><dt><a asp-action="Messages">Unread messages</a></dt><dd>@Model.UnreadMessages</dd></div>
+        </dl>
+
+        <div class="quick-actions">
+            <a class="btn btn-primary" asp-action="CreateCourse">Add course</a>
+            <a class="btn btn-ghost" asp-action="CreateResource">Add resource</a>
+            <a class="btn btn-ghost" asp-action="CreateQuiz">Add quiz</a>
+            <a class="btn btn-ghost" asp-action="CreateUser">Add user</a>
+        </div>
+
+        <div class="admin-panels">
+            <section class="panel">
+                <h2 class="h3">Newest accounts</h2>
+                <table class="data-table compact">
+                    <thead><tr><th scope="col">Name</th><th scope="col">Role</th><th scope="col">Joined</th></tr></thead>
+                    <tbody>
+                        @foreach (var u in Model.RecentUsers)
+                        {
+                            <tr><td>@u.FullName</td><td><span class="role role-@u.Role.ToLower()">@u.Role</span></td><td>@u.CreatedAt.ToString("d MMM")</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2 class="h3">Recent enrolments</h2>
+                <table class="data-table compact">
+                    <thead><tr><th scope="col">Student</th><th scope="col">Course</th><th scope="col">Date</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in Model.RecentEnrollments)
+                        {
+                            <tr><td>@e.StudentName</td><td>@e.CourseTitle</td><td>@e.EnrolledAt.ToString("d MMM")</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="panel panel-wide">
+                <h2 class="h3">Latest quiz attempts</h2>
+                <table class="data-table compact">
+                    <thead><tr><th scope="col">Student</th><th scope="col">Quiz</th><th scope="col">Score</th><th scope="col">Date</th></tr></thead>
+                    <tbody>
+                        @foreach (var a in Model.RecentAttempts)
+                        {
+                            <tr>
+                                <td>@a.StudentName</td>
+                                <td><a class="text-link" asp-controller="Quiz" asp-action="Result" asp-route-id="@a.AttemptId">@a.QuizTitle</a></td>
+                                <td><span class="score-pill @(a.Passed ? "pass" : "fail")">@a.Percent%</span></td>
+                                <td>@a.AttemptedAt.ToString("d MMM, HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+</div>

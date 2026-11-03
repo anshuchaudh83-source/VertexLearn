@@ -1,0 +1,69 @@
+@model ContactMessage
+@{
+    ViewData["Title"] = "Contact us";
+}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Contact us</h1>
+        <p class="page-sub">Questions about a course, a request for new content, or a problem with your account. We read every message.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container contact-grid">
+        <div class="form-card">
+            <form asp-action="Contact" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-error"></div>
+
+                <div class="field-pair">
+                    <div class="field">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" autocomplete="name" />
+                        <span asp-validation-for="Name" class="field-error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" type="email" autocomplete="email" />
+                        <span asp-validation-for="Email" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Subject"></label>
+                    <input asp-for="Subject" list="subjectIdeas" />
+                    <datalist id="subjectIdeas">
+                        <option value="Course request"></option>
+                        <option value="Problem with my account"></option>
+                        <option value="Error in a quiz question"></option>
+                        <option value="General feedback"></option>
+                    </datalist>
+                    <span asp-validation-for="Subject" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Message"></label>
+                    <textarea asp-for="Message" rows="6" data-counter="2000"></textarea>
+                    <span asp-validation-for="Message" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Send message</button>
+            </form>
+        </div>
+
+        <aside class="contact-aside">
+            <h2>Other ways to reach us</h2>
+            <address>
+                VertexLearn support team<br />
+                Asia Pacific University<br />
+                Technology Park Malaysia, Kuala Lumpur<br />
+                <a href="mailto:support@vertexlearn.com">support@vertexlearn.com</a>
+            </address>
+            <p>We usually reply within two working days.</p>
+        </aside>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
